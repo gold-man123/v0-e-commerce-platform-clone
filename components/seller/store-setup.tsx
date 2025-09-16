@@ -54,7 +54,12 @@ export function StoreSetup({ onStoreCreated }: StoreSetupProps) {
       const {
         data: { user },
       } = await supabase.auth.getUser()
-      if (!user) throw new Error("User not authenticated")
+
+      if (!user) {
+        setError("يجب تسجيل الدخول أولاً لإنشاء متجر")
+        setIsLoading(false)
+        return
+      }
 
       const slug = generateSlug(formData.name_en || formData.name_ar)
 

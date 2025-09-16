@@ -103,7 +103,13 @@ export function CheckoutForm() {
       const {
         data: { user },
       } = await supabase.auth.getUser()
-      if (!user) throw new Error("User not authenticated")
+
+      if (!user) {
+        alert("يجب تسجيل الدخول أولاً لإتمام عملية الشراء")
+        router.push("/auth/login?redirect=/checkout")
+        setIsProcessing(false)
+        return
+      }
 
       // Group items by store
       const itemsByStore = cartItems.reduce(

@@ -3,10 +3,13 @@
 export interface Profile {
   id: string
   email: string
+  first_name?: string
+  last_name?: string
   full_name?: string
   phone?: string
   avatar_url?: string
   role: "customer" | "seller" | "admin"
+  store_id?: string
   is_active: boolean
   created_at: string
   updated_at: string
@@ -221,4 +224,28 @@ export interface Notification {
   data?: Record<string, any>
   is_read: boolean
   created_at: string
+}
+
+export interface StoreOrder {
+  id: string
+  order_id: string
+  store_id: string
+  total_amount: number
+  status: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled"
+  created_at: string
+  updated_at: string
+  order?: Order
+  store?: Store
+  items?: OrderItem[]
+}
+
+export interface ContactMessage {
+  id: string
+  name: string
+  email: string
+  subject: string
+  message: string
+  status: "new" | "read" | "replied" | "closed"
+  created_at: string
+  updated_at: string
 }
