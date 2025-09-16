@@ -253,4 +253,28 @@ export function PlatformAnalytics() {
                   <span className="text-sm font-medium">25%</span>
                 </div>
               </div>
-              <div className="flex items-center justify-between">\
+              <div className="flex items-center justify-between">
+                <span className="text-sm">منزل وحديقة</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="w-2/5 h-full bg-accent rounded-full"></div>
+                  </div>
+                  <span className="text-sm font-medium">20%</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">رياضة</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="w-1/5 h-full bg-destructive rounded-full"></div>
+                  </div>
+                  <span className="text-sm font-medium">20%</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
