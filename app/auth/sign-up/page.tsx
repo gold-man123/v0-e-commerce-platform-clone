@@ -1,0 +1,169 @@
+"use client"
+
+import type React from "react"
+
+import { createClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
+export default function SignUpPage() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    repeatPassword: "",
+    fullName: "",
+    phone: "",
+  })
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const supabase = createClient()
+    setIsLoading(true)
+    setError(null)
+
+    if (formData.password !== formData.repeatPassword) {
+      setError("كلمات المرور غير متطابقة / Passwords do not match")
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/`,
+          data: {
+            full_name: formData.fullName,
+            phone: formData.phone,
+            role: "customer",
+          },
+        },
+      })
+      if (error) throw error
+      router.push("/auth/sign-up-success")
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "حدث خطأ / An error occurred")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl text-center">إنشاء حساب جديد</CardTitle>
+              <CardDescription className="text-center">أنشئ حساب عميل للتسوق من المنصة</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSignUp}>
+                <div className="flex flex-col gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">البريد الإلكتروني / Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="m@example.com"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="fullName">الاسم الكامل / Full Name</Label>
+                    <Input
+                      id="fullName"
+                      name="fullName"
+                      type="text"
+                      placeholder="أحمد محمد / Ahmed Mohamed"
+                      required
+                      value={formData.fullName}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="phone">رقم الهاتف / Phone</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+222 XX XX XX XX"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="password">كلمة المرور / Password</Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="repeatPassword">تأكيد كلمة المرور / Repeat Password</Label>
+                    <Input
+                      id="repeatPassword"
+                      name="repeatPassword"
+                      type="password"
+                      required
+                      value={formData.repeatPassword}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {error && <p className="text-sm text-red-500">{error}</p>}
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "جاري إنشاء الحساب..." : "إنشاء حساب"}
+                  </Button>
+                </div>
+
+                <div className="mt-4 text-center text-sm space-y-2">
+                  <div>
+                    لديك حساب بالفعل؟{" "}
+                    <Link href="/auth/login" className="underline underline-offset-4">
+                      تسجيل الدخول
+                    </Link>
+                  </div>
+                  <div>
+                    تريد أن تصبح بائعاً؟{" "}
+                    <Link href="/auth/register-seller" className="underline underline-offset-4">
+                      تسجيل كبائع
+                    </Link>
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
